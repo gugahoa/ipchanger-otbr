@@ -20,9 +20,9 @@ class TibiaClient:
 			memory_map.readline() ##Skip one line.
 
 			base_addr = memory_map.readline()[:8]
-			self.base_addr = int(base_addr, 16)
+			print "Base addr is: " + base_addr
 
-			print "Base addr is: " + str(hex(self.base_addr))
+			self.base_addr = int(base_addr, 16)
 
 			return self.pid
 
