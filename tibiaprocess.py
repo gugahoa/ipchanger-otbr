@@ -4,8 +4,7 @@ import binascii
 import versions
 
 class TibiaProcess:
-	def __init__(self, version):
-		self.version = version
+	def __init__(self):
 		self.pid = 0
 
 	def searchTibia(self):

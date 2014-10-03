@@ -1,9 +1,10 @@
-import tibia_process
+import tibiaprocess
+import tibiaclient
 import versions
 import binascii
 import ptrace
 
-tibia_process = tibia_process.TibiaProcess()
+tibia_process = tibiaprocess.TibiaProcess()
 tibia_process.searchTibia()
 
 if tibia_process.attach() == 0:
@@ -11,7 +12,7 @@ if tibia_process.attach() == 0:
 
 tibia_client = tibiaclient.TibiaClient('8.60', tibia_process)
 
-ip = "baiaklast.no-ip.biz"
+ip = "localhost"
 print "ip: " + ip
 ip = ip[::-1]
 
@@ -25,27 +26,9 @@ for offset, _ in enumerate(ip):
 
 port = 7171
 
-data = tibia_process.readFromMemory(versions.Versions[tibia_process.version]['ver_addr'])
-data = hex(data)
-data = binascii.unhexlify(data[2:])
-
-data = ''.join(reversed(data))
-data = data[:4]
-
-if data == tibia_client.version:
-	print "Correct Tibia version."
-else:
-	quit()
-
-for x in range(10):
-	offset = 0
-	for ips_ in reversed(ips):
-		tibia_process.writeToMemory(versions.Versions[tibia_process.version]['ip_addr'] + x*versions.Versions[tibia_process.version]['dist'] + offset, int(ips_, 16))
-		offset = offset + len(ips_)/2
-		print binascii.unhexlify(ips_)[::-1]
-
-	tibia_process.writeToMemory(versions.Versions[tibia_process.version]['port_addr'] + x*versions.Versions[tibia_process.version]['dist'], port)
-
+tibia_client.checkTibiaVersion()
+tibia_client.changeIp(ips, port)
+tibia_client.changeRsa()
 
 tibia_process.detach();
 
