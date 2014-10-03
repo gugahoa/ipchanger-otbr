@@ -1,5 +1,6 @@
 import versions
 import binascii
+import utils
 
 class TibiaClient:
 	def __init__(self, version, tibia_process):
@@ -30,5 +31,6 @@ class TibiaClient:
 
 			self.tibia_process.writeToMemory(versions.Versions[self.version]['port_addr'] + x*versions.Versions[self.version]['dist'], port)
 
-	def changeRsa():
-		print "changeRsa"
+	def changeRsa(self):
+		for offset, key in enumerate(versions.rsaKey):
+			self.tibia_process.writeToMemory(-versions.Versions[self.version]['rsa_addr'] + offset*8, int(key, 16))

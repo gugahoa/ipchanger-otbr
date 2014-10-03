@@ -1,6 +1,9 @@
 import tibiaprocess
 import tibiaclient
+
 import versions
+import utils
+
 import binascii
 import ptrace
 
@@ -12,17 +15,13 @@ if tibia_process.attach() == 0:
 
 tibia_client = tibiaclient.TibiaClient('8.60', tibia_process)
 
-ip = "localhost"
+ip = "baiaklast.no-ip.biz"
 print "ip: " + ip
 ip = ip[::-1]
 
 ip = binascii.hexlify(ip)
 
-ips = []
-
-for offset, _ in enumerate(ip):
-	if ((offset + 16) % 16 == 0):
-		ips.insert(offset/16, ip[offset:offset+16])
+ips = utils.string_to_blocks(ip, 16)
 
 port = 7171
 
