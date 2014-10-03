@@ -1,13 +1,15 @@
-import tibiaprocess
+import tibia_process
 import versions
 import binascii
 import ptrace
 
-tibiaclient = tibiaclient.TibiaProcess('8.60');
-tibiaclient.searchTibia();
+tibia_process = tibia_process.TibiaProcess()
+tibia_process.searchTibia()
 
-if tibiaclient.attach() == 0:
+if tibia_process.attach() == 0:
 	quit()
+
+tibia_client = tibiaclient.TibiaClient('8.60', tibia_process)
 
 ip = "baiaklast.no-ip.biz"
 print "ip: " + ip
@@ -23,14 +25,14 @@ for offset, _ in enumerate(ip):
 
 port = 7171
 
-data = tibiaclient.readFromMemory(versions.Versions[tibiaclient.version]['ver_addr'])
+data = tibia_process.readFromMemory(versions.Versions[tibia_process.version]['ver_addr'])
 data = hex(data)
 data = binascii.unhexlify(data[2:])
 
 data = ''.join(reversed(data))
 data = data[:4]
 
-if data == tibiaclient.version:
+if data == tibia_client.version:
 	print "Correct Tibia version."
 else:
 	quit()
@@ -38,13 +40,13 @@ else:
 for x in range(10):
 	offset = 0
 	for ips_ in reversed(ips):
-		tibiaclient.writeToMemory(versions.Versions[tibiaclient.version]['ip_addr'] + x*versions.Versions[tibiaclient.version]['dist'] + offset, int(ips_, 16))
+		tibia_process.writeToMemory(versions.Versions[tibia_process.version]['ip_addr'] + x*versions.Versions[tibia_process.version]['dist'] + offset, int(ips_, 16))
 		offset = offset + len(ips_)/2
 		print binascii.unhexlify(ips_)[::-1]
 
-	tibiaclient.writeToMemory(versions.Versions[tibiaclient.version]['port_addr'] + x*versions.Versions[tibiaclient.version]['dist'], port)
+	tibia_process.writeToMemory(versions.Versions[tibia_process.version]['port_addr'] + x*versions.Versions[tibia_process.version]['dist'], port)
 
 
-tibiaclient.detach();
+tibia_process.detach();
 
 print "Done"
