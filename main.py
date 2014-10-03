@@ -1,9 +1,9 @@
-import tibiaclient
+import tibiaprocess
 import versions
 import binascii
 import ptrace
 
-tibiaclient = tibiaclient.TibiaClient('8.60');
+tibiaclient = tibiaclient.TibiaProcess('8.60');
 tibiaclient.searchTibia();
 
 if tibiaclient.attach() == 0:

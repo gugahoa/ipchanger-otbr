@@ -3,7 +3,7 @@ import ptrace
 import binascii
 import versions
 
-class TibiaClient:
+class TibiaProcess:
 	def __init__(self, version):
 		self.version = version
 		self.pid = 0
