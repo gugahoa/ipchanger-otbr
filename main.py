@@ -13,6 +13,6 @@ if __name__ == '__main__':
 		process = tibiaprocess.TibiaProcess(tpid)
 		process.attach()
 		process.changeRsa()
-		process.changeIp('nelvara.com')
+		process.changeIp(argv[1])
 	else:
 		print('No Tibia process found!')

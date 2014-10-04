@@ -57,12 +57,13 @@ class TibiaProcess:
 		addr = []
 
 		for ip in self.ips:
-			for res in self.maps[3].search(bytes(ip, 'utf-8')):
-				self.tracer[self.pid].writeBytes(res, bytes(newip, 'utf-8'))
-				if len(ip) > len(newip):
-					for offset in range(len(newip), len(ip)):
-						self.tracer[self.pid].writeBytes(res + offset, bytes('\x00', 'utf-8'))
+			for maps in self.maps:
+				for res in maps.search(bytes(ip, 'utf-8')):
+					self.tracer[self.pid].writeBytes(res, bytes(newip, 'utf-8'))
+					if len(ip) > len(newip):
+						for offset in range(len(newip), len(ip)):
+							self.tracer[self.pid].writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
-				print(self.tracer[self.pid].readBytes(res, 19))
+					print(self.tracer[self.pid].readBytes(res, 19))
 
 		self.ips = [newip]
