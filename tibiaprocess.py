@@ -38,7 +38,7 @@ class TibiaProcess:
 
 	def attach(self):
 		self.tracer[self.pid].attach()
-		self.maps.extend(self.tracer[self.pid].readMappings()[0:3])
+		self.maps.extend(self.tracer[self.pid].readMappings()[0:4])
 
 	def detach(self):
 		self.tracer[self.pid].detach()
@@ -57,9 +57,12 @@ class TibiaProcess:
 		addr = []
 
 		for ip in self.ips:
-			for res in self.maps[2].search(bytes(ip, 'utf-8')):
-				print(len(ip) > len(newip))
+			for res in self.maps[3].search(bytes(ip, 'utf-8')):
 				self.tracer[self.pid].writeBytes(res, bytes(newip, 'utf-8'))
+				if len(ip) > len(newip):
+					for offset in range(len(newip), len(ip)):
+						self.tracer[self.pid].writeBytes(res + offset, bytes('\x00', 'utf-8'))
+
 				print(self.tracer[self.pid].readBytes(res, 19))
 
 		self.ips = [newip]
