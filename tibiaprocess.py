@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.3
 import os
 from ptrace.debugger.debugger import PtraceDebugger
+from ptrace.binding import ptrace_detach, ptrace_attach
 
 class TibiaProcess:
 	ips = (
@@ -34,15 +35,22 @@ class TibiaProcess:
 		self.pid = pid
 		self.current_ip = None
 		self.tracer = PtraceDebugger()
-		self.tracer.addProcess(pid, False)
+		self.process = False
+		self.attached = False
 
 	def attach(self):
-		self.tracer[self.pid].attach()
-		self.maps.extend(self.tracer[self.pid].readMappings()[0:4])
+		if not self.attached:
+			self.attached = True
+			ptrace_attach(self.pid)
+			if not self.process:
+				self.process = self.tracer.addProcess(self.pid, True)
+
+		self.maps.extend(self.process.readMappings()[0:4])
 
 	def detach(self):
-		self.tracer[self.pid].detach()
-		self.maps = None
+		if self.attached:
+			ptrace_detach(self.pid)
+			self.attached = False
 
 	def changeRsa(self):
 		offset = 0
@@ -50,20 +58,20 @@ class TibiaProcess:
 		for rsa in self.rsas:
 			for res in self.maps[0].search(bytes(rsa, 'utf-8')):
 				print('RSA found at: ', res)
-				self.tracer[self.pid].writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
-				print(self.tracer[self.pid].readBytes(res, 180))
+				self.process.writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
+				print(self.process.readBytes(res, 64))
 
 	def changeIp(self, newip):
 		addr = []
 
 		for ip in self.ips:
-			for maps in self.maps:
+			for maps in self.maps[1:]:
 				for res in maps.search(bytes(ip, 'utf-8')):
-					self.tracer[self.pid].writeBytes(res, bytes(newip, 'utf-8'))
+					self.process.writeBytes(res, bytes(newip, 'utf-8'))
 					if len(ip) > len(newip):
 						for offset in range(len(newip), len(ip)):
-							self.tracer[self.pid].writeBytes(res + offset, bytes('\x00', 'utf-8'))
+							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
-					print(self.tracer[self.pid].readBytes(res, 19))
+					print(self.process.readBytes(res, 19))
 
 		self.ips = [newip]
