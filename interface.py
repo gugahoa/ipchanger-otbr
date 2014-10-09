@@ -9,10 +9,22 @@ class Interface(Gtk.Window):
 		box = Gtk.Box(spacing = 6)
 		self.add(box)
 
+		image = Gtk.Image()
+		image.set_from_file("icon.png")
+		box.pack_start(image, True, True, 0)
+
+		self.label = Gtk.Label()
+		self.label.set_text("IP Address:")
+
 		self.entry = Gtk.Entry()
 		self.entry.set_text("localhost")
 		self.entry.set_max_length(32)
-		box.pack_start(self.entry, True, True, 0)
+
+		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		box.pack_start(vbox, True, True, 0)
+
+		vbox.pack_start(self.label, True, True, 0)
+		vbox.pack_start(self.entry, True, True, 0)
 
 		self.button = Gtk.Button(label = "Change IP")
 		self.button.connect("clicked", self.changeIp)
