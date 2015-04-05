@@ -39,6 +39,7 @@ class Interface(Gtk.Window):
 		if len(pid) > 0:
 			tpid = pid.pop()
 			if not self.tibia_proc or tpid != self.tpid:
+				del self.tibia_proc
 				self.tibia_proc = TibiaProcess(tpid)
 				self.tpid = tpid
 
