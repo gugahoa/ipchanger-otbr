@@ -48,7 +48,11 @@ class Interface(Gtk.Window):
 
 				self.tibia_proc[tpid].detach()
 		else:
-			print("No Tibia process found!")
+			print("Tibia process not found!")
+			dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, "Error!")
+			dialog.format_secondary_text("Tibia process not found!")
+			dialog.run()
+			dialog.destroy()
 
 	def closeWindow(self, widget, event):
 		print("Deleting existing objects")
