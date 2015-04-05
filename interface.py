@@ -32,12 +32,15 @@ class Interface(Gtk.Window):
 		box.pack_end(self.button, True, True, 0)
 
 		self.connect("delete-event", self.closeWindow)
+		self.tibia_proc = None
 
 	def changeIp(self, widget):
 		pid = utils.find_pid_by_name("Tibia")
 		if len(pid) > 0:
 			tpid = pid.pop()
-			self.tibia_proc = TibiaProcess(tpid)
+			if not self.tibia_proc or tpid != self.tpid:
+				self.tibia_proc = TibiaProcess(tpid)
+				self.tpid = tpid
 
 			self.tibia_proc.attach()
 			self.tibia_proc.changeIp(self.entry.get_text())
