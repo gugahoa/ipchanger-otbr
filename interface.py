@@ -32,25 +32,29 @@ class Interface(Gtk.Window):
 		box.pack_end(self.button, True, True, 0)
 
 		self.connect("delete-event", self.closeWindow)
-		self.tibia_proc = None
+		self.tibia_proc = {}
 
 	def changeIp(self, widget):
-		pid = utils.find_pid_by_name("Tibia")
-		if len(pid) > 0:
-			tpid = pid.pop()
-			if not self.tibia_proc or tpid != self.tpid:
-				del self.tibia_proc
-				self.tibia_proc = TibiaProcess(tpid)
-				self.tpid = tpid
+		pids = utils.find_pid_by_name("Tibia")
+		if len(pids) > 0:
+			print(len(pids), "Tibia process found")
+			for tpid in pids:
+				if tpid not in self.tibia_proc:
+					self.tibia_proc[tpid] = TibiaProcess(tpid)
 
-			self.tibia_proc.attach()
-			self.tibia_proc.changeIp(self.entry.get_text())
-			self.tibia_proc.changeRsa()
+				self.tibia_proc[tpid].attach()
+				self.tibia_proc[tpid].changeIp(self.entry.get_text())
+				self.tibia_proc[tpid].changeRsa()
 
-			self.tibia_proc.detach()
+				self.tibia_proc[tpid].detach()
 		else:
 			print("No Tibia process found!")
 
 	def closeWindow(self, widget, event):
+		print("Deleting existing objects")
+		for proc in self.tibia_proc:
+			print("Deleting object from process", proc)
+			del proc
+
 		print("Closing window.")
 		Gtk.main_quit()
