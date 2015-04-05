@@ -68,6 +68,7 @@ class Interface(Gtk.Window):
 				self.tpid = 0
 				model.remove(tree_iter)
 
+	# FIXME: Dropdown list not properly updated
 	def updateClients(self):
 		self.pids = utils.find_pid_by_name("Tibia")
 		if len(self.pids) > 0:
