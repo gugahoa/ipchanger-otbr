@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.4
 from gi.repository import Gtk
 
 from interface import Interface

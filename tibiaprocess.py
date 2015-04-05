@@ -1,5 +1,5 @@
-#!/usr/bin/env python3.3
 import os
+import re
 from ptrace.debugger.debugger import PtraceDebugger
 from ptrace.binding import ptrace_detach, ptrace_attach
 
@@ -53,16 +53,16 @@ class TibiaProcess:
 			self.attached = False
 
 	def changeRsa(self):
-		offset = 0
-
 		for rsa in self.rsas:
 			for res in self.maps[0].search(bytes(rsa, 'utf-8')):
-				print("RSA found at: ", res)
+				print("RSA modified.", res)
 				self.process.writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
-				print(self.process.readBytes(res, 64))
 
+	#TODO: If newip greater than max length, resolve ip address
 	def changeIp(self, newip):
-		addr = []
+		if newip in self.ips:
+			print("IP unmodified.")
+			return
 
 		for ip in self.ips:
 			for maps in self.maps[1:]:
@@ -72,6 +72,24 @@ class TibiaProcess:
 						for offset in range(len(newip), len(ip)):
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
-					print(self.process.readBytes(res, 19))
-
+		print("IP modified")
 		self.ips = [newip]
+
+	def getVersion(self):
+		if not self.attached:
+			self.attach()
+
+		for res in self.maps[2].search(bytes("Version ", "utf-8")):
+			version = self.process.readBytes(res, 13)
+			version = version.decode("utf-8")
+
+			match = re.search("([0-9]+).([0-9]+)", version)
+			if match:
+				version = int(match.group(1) + match.group(2))
+			else:
+				version = 0
+
+		if self.attached:
+			self.detach()
+
+		return version
