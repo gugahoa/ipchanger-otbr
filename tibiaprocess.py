@@ -57,7 +57,7 @@ class TibiaProcess:
 
 		for rsa in self.rsas:
 			for res in self.maps[0].search(bytes(rsa, 'utf-8')):
-				print('RSA found at: ', res)
+				print("RSA found at: ", res)
 				self.process.writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
 				print(self.process.readBytes(res, 64))
 

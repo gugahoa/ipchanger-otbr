@@ -1,10 +1,11 @@
 from gi.repository import Gtk
 
-class Interface(Gtk.Window):
-	def __init__(self, process):
-		Gtk.Window.__init__(self, title="OTBr IPChanger")
+from tibiaprocess import TibiaProcess
+import utils
 
-		self.tibia_proc = process
+class Interface(Gtk.Window):
+	def __init__(self):
+		Gtk.Window.__init__(self, title="OTBr IPChanger")
 
 		box = Gtk.Box(spacing = 6)
 		self.add(box)
@@ -30,11 +31,30 @@ class Interface(Gtk.Window):
 		self.button.connect("clicked", self.changeIp)
 		box.pack_end(self.button, True, True, 0)
 
-		self.connect("delete-event", Gtk.main_quit)
+		self.connect("delete-event", self.closeWindow)
+		self.tibia_proc = {}
 
 	def changeIp(self, widget):
-		self.tibia_proc.attach()
-		self.tibia_proc.changeIp(self.entry.get_text())
-		self.tibia_proc.changeRsa()
+		pids = utils.find_pid_by_name("Tibia")
+		if len(pids) > 0:
+			print(len(pids), "Tibia process found")
+			for tpid in pids:
+				if tpid not in self.tibia_proc:
+					self.tibia_proc[tpid] = TibiaProcess(tpid)
 
-		self.tibia_proc.detach()
+				self.tibia_proc[tpid].attach()
+				self.tibia_proc[tpid].changeIp(self.entry.get_text())
+				self.tibia_proc[tpid].changeRsa()
+
+				self.tibia_proc[tpid].detach()
+		else:
+			print("No Tibia process found!")
+
+	def closeWindow(self, widget, event):
+		print("Deleting existing objects")
+		for proc in self.tibia_proc:
+			print("Deleting object from process", proc)
+			del proc
+
+		print("Closing window.")
+		Gtk.main_quit()
