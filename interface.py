@@ -1,10 +1,11 @@
 from gi.repository import Gtk
 
-class Interface(Gtk.Window):
-	def __init__(self, process):
-		Gtk.Window.__init__(self, title="OTBr IPChanger")
+from tibiaprocess import TibiaProcess
+import utils
 
-		self.tibia_proc = process
+class Interface(Gtk.Window):
+	def __init__(self):
+		Gtk.Window.__init__(self, title="OTBr IPChanger")
 
 		box = Gtk.Box(spacing = 6)
 		self.add(box)
@@ -30,11 +31,22 @@ class Interface(Gtk.Window):
 		self.button.connect("clicked", self.changeIp)
 		box.pack_end(self.button, True, True, 0)
 
-		self.connect("delete-event", Gtk.main_quit)
+		self.connect("delete-event", self.closeWindow)
 
 	def changeIp(self, widget):
-		self.tibia_proc.attach()
-		self.tibia_proc.changeIp(self.entry.get_text())
-		self.tibia_proc.changeRsa()
+		pid = utils.find_pid_by_name("Tibia")
+		if len(pid) > 0:
+			tpid = pid.pop()
+			self.tibia_proc = TibiaProcess(tpid)
 
-		self.tibia_proc.detach()
+			self.tibia_proc.attach()
+			self.tibia_proc.changeIp(self.entry.get_text())
+			self.tibia_proc.changeRsa()
+
+			self.tibia_proc.detach()
+		else:
+			print("No Tibia process found!")
+
+	def closeWindow(self, widget, event):
+		print("Closing window.")
+		Gtk.main_quit()
