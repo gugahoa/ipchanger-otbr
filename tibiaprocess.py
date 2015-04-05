@@ -1,4 +1,5 @@
 import os
+import re
 from ptrace.debugger.debugger import PtraceDebugger
 from ptrace.binding import ptrace_detach, ptrace_attach
 
@@ -73,3 +74,22 @@ class TibiaProcess:
 
 		print("IP modified")
 		self.ips = [newip]
+
+	def getVersion(self):
+		if not self.attached:
+			self.attach()
+
+		for res in self.maps[2].search(bytes("Version ", "utf-8")):
+			version = self.process.readBytes(res, 13)
+			version = version.decode("utf-8")
+
+			match = re.search("([0-9]+).([0-9]+)", version)
+			if match:
+				version = int(match.group(1) + match.group(2))
+			else:
+				version = 0
+
+		if self.attached:
+			self.detach()
+
+		return version

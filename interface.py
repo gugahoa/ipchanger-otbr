@@ -28,7 +28,8 @@ class Interface(Gtk.Window):
 		hbox.pack_start(self.label, True, True, 0)
 		hbox.pack_start(self.entry, True, True, 0)
 
-		self.model = Gtk.ListStore(int, str)
+		hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+		self.model = Gtk.ListStore(int, int)
 		self.client_list = Gtk.ComboBox.new_with_model(self.model)
 		self.client_list.connect("changed", self.selectClient)
 
@@ -37,7 +38,13 @@ class Interface(Gtk.Window):
 		self.client_list.pack_start(renderer_text, True)
 		self.client_list.add_attribute(renderer_text, "text", 1)
 
-		vbox.pack_start(self.client_list, False, False, 0)
+		self.button = Gtk.Button.new_from_icon_name(icon_name = "gtk-refresh", size = 2)
+		self.button.set_tooltip_text("Update client list")
+		self.button.connect("clicked", self.updateClients)
+
+		hbox.pack_end(self.button, True, False, 0)
+		hbox.pack_start(self.client_list, True, True, 0)
+		vbox.pack_start(hbox, True, True, 0)
 
 		box.pack_start(vbox, True, True, 0)
 
@@ -46,53 +53,48 @@ class Interface(Gtk.Window):
 		box.pack_end(self.button, True, True, 0)
 
 		self.connect("delete-event", self.closeWindow)
+
 		self.tibia_proc = {}
-		self.inserted = {}
+		self.list = {}
 		self.tpid = 0
 
-		self.updateClients()
+		self.updateClients(None)
 
 	def selectClient(self, combo):
 		tree_iter = combo.get_active_iter()
 		if tree_iter != None:
 			model = combo.get_model()
-			self.tpid = model[tree_iter][0]
+			self.selected_version = model[tree_iter][1]
+			self.updateClients(None)
 
-			self.updateClients()
-			if self.tpid not in self.pids:
-				if self.tpid in self.tibia_proc:
-					del self.tibia_proc[self.tpid]
-				if self.tpid in self.inserted:
-					del self.inserted[self.tpid]
-
-				self.tpid = 0
-				model.remove(tree_iter)
-
-	# FIXME: Dropdown list not properly updated
-	def updateClients(self):
+	def updateClients(self, widget):
 		self.pids = utils.find_pid_by_name("Tibia")
 		if len(self.pids) > 0:
 			for tpid in self.pids:
-				if tpid not in self.inserted:
-					self.model.append([tpid, "Tibia"])
-					self.inserted[tpid] = True
-		else:
-			self.model.append([0, "Tibia not found"])
+				if tpid not in self.tibia_proc:
+					self.tibia_proc[tpid] = TibiaProcess(tpid)
+				version = self.tibia_proc[tpid].getVersion()
+
+				if version not in self.list:
+					self.model.append([0, version])
+					self.list[version] = []
+
+				if tpid not in self.list[version]:
+					self.list[version].append(tpid)
 
 	def changeIp(self, widget):
 		self.pids = utils.find_pid_by_name("Tibia")
-		if self.tpid == 0 or self.tpid not in self.pids:
-			self.updateClients()
-			return
+		for tpid in self.list[self.selected_version]:
+			if tpid not in self.pids:
+				continue
 
-		if self.tpid not in self.tibia_proc:
-			self.tibia_proc[self.tpid] = TibiaProcess(self.tpid)
+			self.tibia_proc[tpid] = TibiaProcess(tpid)
 
-		self.tibia_proc[self.tpid].attach()
-		self.tibia_proc[self.tpid].changeIp(self.entry.get_text())
-		self.tibia_proc[self.tpid].changeRsa()
+			self.tibia_proc[tpid].attach()
+			self.tibia_proc[tpid].changeIp(self.entry.get_text())
+			self.tibia_proc[tpid].changeRsa()
 
-		self.tibia_proc[self.tpid].detach()
+			self.tibia_proc[tpid].detach()
 
 	def closeWindow(self, widget, event):
 		print("Deleting existing objects")
