@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.3
 import os
 from ptrace.debugger.debugger import PtraceDebugger
 from ptrace.binding import ptrace_detach, ptrace_attach
@@ -61,6 +60,10 @@ class TibiaProcess:
 
 	#TODO: If newip greater than max length
 	def changeIp(self, newip):
+		if newip in self.ips:
+			print("IP unmodified.")
+			return
+
 		for ip in self.ips:
 			for maps in self.maps[1:]:
 				for res in maps.search(bytes(ip, 'utf-8')):
@@ -69,6 +72,5 @@ class TibiaProcess:
 						for offset in range(len(newip), len(ip)):
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
-					print(self.process.readBytes(res, 19))
-
+		print("IP modified")
 		self.ips = [newip]
