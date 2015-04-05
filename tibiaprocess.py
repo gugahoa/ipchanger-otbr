@@ -61,6 +61,7 @@ class TibiaProcess:
 				self.process.writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
 				print(self.process.readBytes(res, 64))
 
+	#TODO: If newip greater than max length
 	def changeIp(self, newip):
 		addr = []
 
