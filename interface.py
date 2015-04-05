@@ -79,7 +79,9 @@ class Interface(Gtk.Window):
 			self.model.append([0, "Tibia not found"])
 
 	def changeIp(self, widget):
-		if self.tpid == 0:
+		self.pids = utils.find_pid_by_name("Tibia")
+		if self.tpid == 0 or self.tpid not in self.pids:
+			self.updateClients()
 			return
 
 		if self.tpid not in self.tibia_proc:

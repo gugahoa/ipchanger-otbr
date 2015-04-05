@@ -72,5 +72,4 @@ class TibiaProcess:
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
 		print("IP modified")
-		self.changeName(newip)
 		self.ips = [newip]
