@@ -53,8 +53,6 @@ class TibiaProcess:
 			self.attached = False
 
 	def changeRsa(self):
-		offset = 0
-
 		for rsa in self.rsas:
 			for res in self.maps[0].search(bytes(rsa, 'utf-8')):
 				print("RSA found at: ", res)
@@ -63,8 +61,6 @@ class TibiaProcess:
 
 	#TODO: If newip greater than max length
 	def changeIp(self, newip):
-		addr = []
-
 		for ip in self.ips:
 			for maps in self.maps[1:]:
 				for res in maps.search(bytes(ip, 'utf-8')):
