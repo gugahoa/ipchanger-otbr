@@ -54,11 +54,10 @@ class TibiaProcess:
 	def changeRsa(self):
 		for rsa in self.rsas:
 			for res in self.maps[0].search(bytes(rsa, 'utf-8')):
-				print("RSA found at: ", res)
+				print("RSA modified.", res)
 				self.process.writeBytes(res, bytes(self.ot_rsa, 'utf-8'))
-				print(self.process.readBytes(res, 64))
 
-	#TODO: If newip greater than max length
+	#TODO: If newip greater than max length, resolve ip address
 	def changeIp(self, newip):
 		if newip in self.ips:
 			print("IP unmodified.")
@@ -73,4 +72,5 @@ class TibiaProcess:
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
 
 		print("IP modified")
+		self.changeName(newip)
 		self.ips = [newip]
