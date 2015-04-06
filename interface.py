@@ -57,6 +57,7 @@ class Interface(Gtk.Window):
 		self.tibia_proc = {}
 		self.list = {}
 		self.tpid = 0
+		self.selected_version = 0
 
 		self.updateClients(None)
 
@@ -83,12 +84,18 @@ class Interface(Gtk.Window):
 					self.list[version].append(tpid)
 
 	def changeIp(self, widget):
+		if self.selected_version == 0:
+			print("Nothing selected")
+			return
+
 		self.pids = utils.find_pid_by_name("Tibia")
 		for tpid in self.list[self.selected_version]:
 			if tpid not in self.pids:
+				if tpid in self.tibia_proc:
+					del self.tibia_proc[tpid]
 				continue
-
-			self.tibia_proc[tpid] = TibiaProcess(tpid)
+			if tpid not in self.tibia_proc:
+				self.tibia_proc[tpid] = TibiaProcess(tpid)
 
 			self.tibia_proc[tpid].attach()
 			self.tibia_proc[tpid].changeIp(self.entry.get_text())

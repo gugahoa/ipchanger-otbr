@@ -64,6 +64,7 @@ class TibiaProcess:
 			print("IP unmodified.")
 			return
 
+		print("New IP:", newip)
 		for ip in self.ips:
 			for maps in self.maps[1:]:
 				for res in maps.search(bytes(ip, 'utf-8')):
@@ -71,9 +72,10 @@ class TibiaProcess:
 					if len(ip) > len(newip):
 						for offset in range(len(newip), len(ip)):
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
+					print(self.process.readBytes(res, 18))
 
-		print("IP modified")
 		self.ips = [newip]
+		print("self.ips = [newip]", self.ips, newip)
 
 	def getVersion(self):
 		if not self.attached:
