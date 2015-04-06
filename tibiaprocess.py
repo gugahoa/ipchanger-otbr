@@ -75,7 +75,6 @@ class TibiaProcess:
 					print(self.process.readBytes(res, 18))
 
 		self.ips = [newip]
-		print("self.ips = [newip]", self.ips, newip)
 
 	def getVersion(self):
 		if not self.attached:
