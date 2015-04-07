@@ -56,7 +56,7 @@ class Interface(Gtk.Window):
 
 		self.tibia_proc = {}
 		self.list = {}
-		self.tpid = 0
+		self.selected_version = 0
 
 		self.updateClients(None)
 
@@ -65,7 +65,6 @@ class Interface(Gtk.Window):
 		if tree_iter != None:
 			model = combo.get_model()
 			self.selected_version = model[tree_iter][1]
-			self.updateClients(None)
 
 	def updateClients(self, widget):
 		self.pids = utils.find_pid_by_name("Tibia")
@@ -81,14 +80,28 @@ class Interface(Gtk.Window):
 
 				if tpid not in self.list[version]:
 					self.list[version].append(tpid)
+			for version, tpids in self.list.items():
+				for tpid in tpids:
+					if tpid not in self.pids:
+						tpids.remove(tpid)
+		else:
+			self.list = {}
+			self.tibia_proc = {}
+			self.selected_version = 0
 
 	def changeIp(self, widget):
-		self.pids = utils.find_pid_by_name("Tibia")
+		self.updateClients(None)
+		if self.selected_version == 0 or self.list[self.selected_version] == []:
+			print("No Tibia of such version open (%s)" % self.selected_version)
+			return
+
 		for tpid in self.list[self.selected_version]:
 			if tpid not in self.pids:
+				if tpid in self.tibia_proc:
+					del self.tibia_proc[tpid]
 				continue
-
-			self.tibia_proc[tpid] = TibiaProcess(tpid)
+			if tpid not in self.tibia_proc:
+				self.tibia_proc[tpid] = TibiaProcess(tpid)
 
 			self.tibia_proc[tpid].attach()
 			self.tibia_proc[tpid].changeIp(self.entry.get_text())
