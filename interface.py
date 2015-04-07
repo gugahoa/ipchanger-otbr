@@ -42,7 +42,7 @@ class Interface(Gtk.Window):
 		self.button.set_tooltip_text("Update client list")
 		self.button.connect("clicked", self.updateClients)
 
-		hbox.pack_end(self.button, True, False, 0)
+		hbox.pack_end(self.button, False, False, 0)
 		hbox.pack_start(self.client_list, True, True, 0)
 		vbox.pack_start(hbox, True, True, 0)
 
