@@ -6,6 +6,7 @@ import utils
 class Interface(Gtk.Window):
 	def __init__(self):
 		Gtk.Window.__init__(self, title="OTBr IPChanger")
+		self.props.resizable = False
 
 		box = Gtk.Box(spacing = 6)
 		self.add(box)
@@ -33,7 +34,6 @@ class Interface(Gtk.Window):
 		self.client_list = Gtk.ComboBox.new_with_model(self.model)
 		self.client_list.connect("changed", self.selectClient)
 
-		self.client_list.set_model(self.model)
 		renderer_text = Gtk.CellRendererText()
 		self.client_list.pack_start(renderer_text, True)
 		self.client_list.add_attribute(renderer_text, "text", 1)
