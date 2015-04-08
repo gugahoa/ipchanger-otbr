@@ -72,7 +72,7 @@ class Interface(Gtk.Window):
 
 	def updateClients(self, widget):
 		self.pids = utils.find_pid_by_name("Tibia")
-		if len(self.pids) >= 0:
+		if len(self.pids) > 0:
 			for tpid in self.pids:
 				if tpid not in self.tibia_proc:
 					self.tibia_proc[tpid] = TibiaProcess(tpid)
