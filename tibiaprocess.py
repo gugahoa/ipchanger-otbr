@@ -4,7 +4,7 @@ from ptrace.debugger.debugger import PtraceDebugger
 from ptrace.binding import ptrace_detach, ptrace_attach
 
 class TibiaProcess:
-	ips = (
+	ips = [
 		"login01.tibia.com",
 		"login02.tibia.com",
 		"login03.tibia.com",
@@ -21,7 +21,7 @@ class TibiaProcess:
 		"tibia1.cipsoft.com",
 		"server.tibia.com",
 		"server2.tibia.com"
-	)
+	]
 
 	rsas = (
 		"124710459426827943004376449897985582167801707960697037164044904862948569380850421396904597686953877022394604239428185498284169068581802277612081027966724336319448537811441719076484340922854929273517308661370727105382899118999403808045846444647284499123164879035103627004668521005328367415259939915284902061793",
@@ -64,17 +64,17 @@ class TibiaProcess:
 			print("IP unmodified.")
 			return
 
-		print("New IP:", newip)
 		for ip in self.ips:
 			for maps in self.maps[1:]:
 				for res in maps.search(bytes(ip, 'utf-8')):
+					print("Found: " + ip)
 					self.process.writeBytes(res, bytes(newip, 'utf-8'))
 					if len(ip) > len(newip):
 						for offset in range(len(newip), len(ip)):
 							self.process.writeBytes(res + offset, bytes('\x00', 'utf-8'))
-					print(self.process.readBytes(res, 18))
+					print("Writing: " + newip)
 
-		self.ips = [newip]
+		self.ips.insert(0, newip)
 
 	def getVersion(self):
 		if not self.attached:
